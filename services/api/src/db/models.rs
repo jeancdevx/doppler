@@ -1,0 +1,70 @@
+use sqlx::FromRow;
+
+#[derive(Debug, Clone, FromRow)]
+pub struct JobRow {
+    pub id: String,
+    pub session_id: String,
+    pub filename: String,
+    pub content_type: String,
+    pub declared_size_bytes: i64,
+    pub actual_size_bytes: Option<i64>,
+    pub object_key: String,
+    pub r2_etag: Option<String>,
+    pub status: String,
+    pub error_code: Option<String>,
+    pub error_message: Option<String>,
+    pub audio_sha256: Option<String>,
+    pub model_sha256: Option<String>,
+    pub contract_version: Option<String>,
+    pub contract_sha256: Option<String>,
+    pub threshold: Option<f64>,
+    pub score_type: Option<String>,
+    pub original_sample_rate: Option<i64>,
+    pub original_channels: Option<i64>,
+    pub prepared_sample_rate: Option<i64>,
+    pub prepared_channels: Option<i64>,
+    pub duration_seconds: Option<f64>,
+    pub prepared_samples: Option<i64>,
+    pub peak_before_normalization: Option<f64>,
+    pub peak_after_normalization: Option<f64>,
+    pub rms_after_normalization: Option<f64>,
+    pub downmix_cancellation_candidate: i64,
+    pub discarded_tail_samples: Option<i64>,
+    pub discarded_tail_seconds: Option<f64>,
+    pub window_seconds: Option<f64>,
+    pub hop_seconds: Option<f64>,
+    pub windows_total: i64,
+    pub windows_positive: i64,
+    pub short_clip: i64,
+    pub short_clip_message: Option<String>,
+    pub client_upload_ms: Option<f64>,
+    pub queue_wait_ms: Option<f64>,
+    pub r2_fetch_ms: Option<f64>,
+    pub decode_and_prepare_ms: Option<f64>,
+    pub inference_ms: Option<f64>,
+    pub persist_ms: Option<f64>,
+    pub total_processing_ms: Option<f64>,
+    pub run_id: String,
+    pub created_at: String,
+    pub confirmed_at: Option<String>,
+    pub started_at: Option<String>,
+    pub completed_at: Option<String>,
+    pub expires_at: String,
+    pub deleted_at: Option<String>,
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct WindowRow {
+    pub window_index: i64,
+    pub start_seconds: f64,
+    pub end_seconds: f64,
+    pub score: f64,
+    pub label: String,
+    pub margin_vs_threshold: f64,
+}
+
+#[derive(Debug, Clone, FromRow)]
+pub struct ExpiredJobRecord {
+    pub id: String,
+    pub object_key: String,
+}
