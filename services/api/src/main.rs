@@ -65,6 +65,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     worker::spawn_dispatcher(state.clone());
     worker::spawn_cleanup_task(state.clone());
+    worker::spawn_health_monitor(state.clone());
 
     let app = build_app(state);
     let listener = TcpListener::bind(&bind_addr).await?;

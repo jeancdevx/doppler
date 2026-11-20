@@ -4,6 +4,7 @@ use std::time::{Duration, Instant};
 use tokio::sync::Semaphore;
 
 use crate::db;
+use crate::maintenance;
 use crate::state::AppState;
 
 pub fn spawn_dispatcher(state: AppState) {
@@ -11,8 +12,19 @@ pub fn spawn_dispatcher(state: AppState) {
     let semaphore = Arc::new(Semaphore::new(permits));
 
     tokio::spawn(async move {
-        tracing::info!(max_concurrent_inference = permits, "Despachador de inferencia iniciado");
+        tracing::info!(
+            max_concurrent_inference = permits,
+            "Despachador de inferencia iniciado"
+        );
         loop {
+            // En modo mantenimiento se pausa la reserva de nuevos trabajos permitiendo drenar los activos
+            if let Ok(maint) = maintenance::get_maintenance_state(&state.db).await {
+                if maint.enabled {
+                    tokio::time::sleep(Duration::from_millis(750)).await;
+                    continue;
+                }
+            }
+
             let permit = match semaphore.clone().acquire_owned().await {
                 Ok(p) => p,
                 Err(_) => break,
@@ -61,7 +73,8 @@ async fn process_job(state: AppState, job: db::JobRow) {
         Err(err) => {
             let (_, code) = err.status_and_code();
             tracing::warn!(job_id = %job_id, code = code, error = %err, "Fallo descargando objeto de R2");
-            let _ = db::mark_job_failed(&state.db, &job_id, "analyzing", code, &err.to_string()).await;
+            let _ =
+                db::mark_job_failed(&state.db, &job_id, "analyzing", code, &err.to_string()).await;
             return;
         }
     };
@@ -71,7 +84,14 @@ async fn process_job(state: AppState, job: db::JobRow) {
         Ok(res) => res,
         Err(err) => {
             tracing::warn!(job_id = %job_id, code = %err.code, message = %err.message, "Inferencia fallida");
-            let _ = db::mark_job_failed(&state.db, &job_id, "analyzing", &err.code, &err.message).await;
+            let _ = db::mark_job_failed(
+                &state.db,
+                &job_id,
+                "analyzing",
+                &err.code,
+                &err.message,
+            )
+            .await;
             return;
         }
     };
@@ -109,32 +129,84 @@ async fn process_job(state: AppState, job: db::JobRow) {
     }
 }
 
-pub fn spawn_cleanup_task(state: AppState) {
-    let interval_secs = state.config.cleanup_interval_seconds;
+pub fn spawn_health_monitor(state: AppState) {
+    let interval_secs = state.config.health_check_interval_seconds;
     tokio::spawn(async move {
+        tracing::info!(
+            interval_seconds = interval_secs,
+            incident_threshold = state.config.incident_failure_threshold,
+            "Monitor periódico de salud iniciado"
+        );
         let mut ticker = tokio::time::interval(Duration::from_secs(interval_secs));
         loop {
             ticker.tick().await;
-            if let Err(err) = run_cleanup_once(&state).await {
-                tracing::warn!(error = %err, "Error en ciclo de limpieza por retención");
+            let probe = maintenance::probe_live_dependencies(&state, true).await;
+            if let Err(err) = maintenance::record_health_probe_and_incidents(&state, &probe).await {
+                tracing::warn!(error = %err, "Error persistiendo muestra periódica de salud");
             }
         }
     });
 }
 
+pub fn spawn_cleanup_task(state: AppState) {
+    let interval_secs = state.config.cleanup_interval_seconds;
+    tokio::spawn(async move {
+        let mut ticker = tokio::time::interval(Duration::from_secs(interval_secs));
+        let mut cycles: u64 = 0;
+        loop {
+            ticker.tick().await;
+            if let Err(err) = run_cleanup_once(&state).await {
+                tracing::warn!(error = %err, "Error en ciclo de limpieza por retención");
+            }
+            // Limpieza del historial técnico (30 días por defecto) al iniciar y cada 12 ciclos
+            if cycles % 12 == 0 {
+                if let Err(err) = maintenance::purge_expired_maintenance_history(
+                    &state.db,
+                    state.config.history_retention_days,
+                )
+                .await
+                {
+                    tracing::warn!(error = %err, "Error purgando historial técnico expirado");
+                }
+            }
+            cycles = cycles.saturating_add(1);
+        }
+    });
+}
+
 pub async fn run_cleanup_once(state: &AppState) -> Result<usize, crate::error::ApiError> {
+    let start = Instant::now();
     let expired = db::find_expired_or_abandoned_jobs(&state.db, 30).await?;
     let mut cleaned = 0usize;
+    let mut r2_deleted = 0i64;
+    let mut r2_errors = 0i64;
     for rec in expired {
         if state.r2.is_owned_key(&rec.object_key) {
             if let Err(err) = state.r2.delete_object(&rec.object_key).await {
+                r2_errors += 1;
                 tracing::warn!(job_id = %rec.id, error = %err, "No se pudo borrar objeto expirado en R2");
                 continue;
             }
+            r2_deleted += 1;
         }
         db::hard_delete_job(&state.db, &rec.id).await?;
         cleaned += 1;
     }
+    let duration_ms = start.elapsed().as_secs_f64() * 1000.0;
+    let status = if r2_errors > 0 { "partial" } else { "ok" };
+    let _ = maintenance::record_retention_run(
+        &state.db,
+        "jobs_24h",
+        cleaned as i64,
+        r2_deleted,
+        r2_errors,
+        0,
+        duration_ms,
+        status,
+        Some("Limpieza por retención de trabajos/audios 24 h (telemetría histórica conservada)."),
+    )
+    .await;
+
     if cleaned > 0 {
         tracing::info!(cleaned = cleaned, "Limpieza por retención completada");
     }
