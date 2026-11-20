@@ -21,6 +21,13 @@ components:
       description: >-
         Cookie HttpOnly, SameSite=Lax firmada con HMAC-SHA256 que vincula los
         trabajos a una sesión anónima sin cuentas de usuario.
+    AdminToken:
+      type: apiKey
+      in: header
+      name: X-Admin-Token
+      description: >-
+        Token administrativo local validado en tiempo constante contra ADMIN_API_TOKEN
+        del servidor. Reside únicamente en memoria en la consola /mantenimiento.
 
   schemas:
     ErrorEnvelope:
@@ -45,6 +52,7 @@ components:
                 - r2_error
                 - inference_error
                 - database_error
+                - maintenance_mode
                 - internal_error
             message:
               type: string
@@ -502,3 +510,159 @@ paths:
           description: Archivo JSON o CSV descargable
         '409':
           description: El trabajo todavía no está completado
+
+  /api/ready:
+    get:
+      summary: Readiness estricto de dependencias (SQLite, inferencia CPU, R2 y modo mantenimiento)
+      responses:
+        '200':
+          description: Servicio listo para recibir tráfico
+        '503':
+          description: Alguna dependencia crítica no está disponible o el modo mantenimiento está activo
+
+  /api/jobs/{job_id}/feedback:
+    get:
+      summary: Lista los reportes de retroalimentación creados en la sesión actual para un trabajo
+      security:
+        - SessionCookie: []
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de reportes del propietario de sesión
+        '404':
+          description: Trabajo no encontrado en la sesión
+    post:
+      summary: Registra un reporte de retroalimentación ligado al trabajo y ventana opcional/obligatoria
+      security:
+        - SessionCookie: []
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Reporte creado en estado received
+        '400':
+          description: Tipo de reporte, ventana o comentario inválidos
+        '404':
+          description: Trabajo no encontrado en la sesión
+        '429':
+          description: Cuota horaria de retroalimentación excedida
+
+  /api/admin/overview:
+    get:
+      summary: Resumen operativo de monitoreo (sondas, incidentes, latencias 30 d, almacenamiento y despliegues)
+      security:
+        - AdminToken: []
+      parameters:
+        - name: days
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 30
+      responses:
+        '200':
+          description: Panel operativo agregado
+        '401':
+          description: Token administrativo ausente o inválido
+
+  /api/admin/health/probe:
+    post:
+      summary: Ejecuta y persiste inmediatamente una sonda real de dependencias y evaluación de incidentes
+      security:
+        - AdminToken: []
+      responses:
+        '200':
+          description: Resultado detallado de la sonda
+
+  /api/admin/maintenance:
+    get:
+      summary: Consulta el estado de modo mantenimiento y trabajos activos en inferencia/cola
+      security:
+        - AdminToken: []
+      responses:
+        '200':
+          description: Estado de mantenimiento y cola
+    post:
+      summary: Activa o desactiva el modo mantenimiento (rechaza nuevas cargas con HTTP 503 y pausa nuevos reclamos)
+      security:
+        - AdminToken: []
+      responses:
+        '200':
+          description: Estado actualizado
+
+  /api/admin/drift:
+    get:
+      summary: Consulta la referencia congelada activa, estado de representatividad y evaluaciones recientes de drift
+      security:
+        - AdminToken: []
+      responses:
+        '200':
+          description: Estado de drift entrada/salida
+
+  /api/admin/drift/reference:
+    post:
+      summary: Importa una referencia congelada de drift (con metadatos de procedencia y compatibilidad)
+      security:
+        - AdminToken: []
+      responses:
+        '201':
+          description: Referencia importada y activada
+
+  /api/admin/drift/evaluate:
+    post:
+      summary: Ejecuta una evaluación de drift de entrada y salida sobre observaciones de archivo
+      security:
+        - AdminToken: []
+      responses:
+        '200':
+          description: Resultado explícito (no_alert, drift_detected, insufficient_data, no_reference, evaluation_error)
+
+  /api/admin/feedback:
+    get:
+      summary: Lista la bandeja administrativa de retroalimentación y métricas deduplicadas de muestra revisada
+      security:
+        - AdminToken: []
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Reportes y métricas sobre muestra revisada (unavailable si n=0)
+
+  /api/admin/feedback/{report_id}:
+    patch:
+      summary: Aplica una transición válida de la máquina de estados de revisión humana
+      security:
+        - AdminToken: []
+      parameters:
+        - name: report_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Reporte actualizado
+        '409':
+          description: Transición de estado inválida
+
+  /api/admin/deployments:
+    post:
+      summary: Registra en auditoría una validación, activación, rechazo o rollback de paquete de modelo
+      security:
+        - AdminToken: []
+      responses:
+        '201':
+          description: Evento registrado en model_deployments
