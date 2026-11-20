@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools==75.8.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "doppler-inference"
+version = "1.0.0"
+description = "Servicio interno de inferencia acústica ResNet18 Log-Mel para Doppler"
+requires-python = ">=3.12,<3.14"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.fastapi]
+entrypoint = "doppler_inference.main:app"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
