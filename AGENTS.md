@@ -92,11 +92,12 @@ services/api/
     error.rs                # Jerarquía de errores con thiserror y códigos HTTP explícitos
     state.rs                # AppState compartido (Arc<SqlitePool>, R2Client, InferenceClient, Config)
     domain/                 # Modelos de dominio, máquinas de estado válidas, DTOs
-    db/                     # Repositorio SQLite, transiciones atómicas y recuperación tras reinicio
-    storage/                # Cliente Cloudflare R2 (aws-sdk-s3), presigned PUT/GET, HEAD, streaming bounded
+    db/                     # Repositorio SQLite modular (mod, models, sessions, jobs, results)
+    maintenance/            # Monitoreo y mantenimiento modular (mod, auth, health, telemetry, drift, feedback, deployments)
+    storage/                # Cliente Cloudflare R2 (aws-sdk-s3), presigned PUT/GET, HEAD, uso por prefijo
     inference/              # Cliente HTTP interno hacia FastAPI con límites de tamaño y timeout
-    routes/                 # Controladores HTTP (health, sessions, uploads, jobs, exports)
-    worker/                 # Despachador de cola (concurrencia 1) y tarea de limpieza por retención
+    routes/                 # Controladores HTTP modulares (mod, auth, health, uploads, jobs, feedback, admin)
+    worker/                 # Despachador de cola (concurrencia 1), sonda de salud (60s) y limpieza por retención
 ```
 
 Reglas Rust obligatorias:

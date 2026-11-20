@@ -162,3 +162,10 @@ El frontend en **Astro 5 + Svelte 5 (runes) + Tailwind CSS v4** integra múltipl
   - `prefers-reduced-transparency: reduce` y `prefers-contrast: more` aumentan opacidad y contraste de bordes.
   - `min-width: 0` en columnas flex/grid, `flex-shrink: 0` en iconos/badges, truncado central para nombres largos de archivo WAV y `title`/tooltip con nombre completo.
   - Todos los gráficos tienen `role="img"` / controles equivalentes operables por teclado y anuncios en `aria-live="polite"`.
+
+---
+
+## 8. Extensiones de Monitoreo, Retroalimentación y Mantenimiento (Capítulo 10)
+
+- **Panel de retroalimentación en el Estudio (`FeedbackPanel.svelte`):** integrado dentro del chasis `[data-studio-theme]` para análisis completados; sincroniza automáticamente el selector de ventana con la ventana seleccionada en el estudio, advierte explícitamente sobre la expiración del WAV a las 24 h y muestra el historial de reportes de la sesión actual con badges semánticos de estado (`received` → `resolved`).
+- **Consola operativa (`/mantenimiento`, `MaintenanceConsole/`):** vista interna dedicada bajo los mismos tokens oscuros de instrumento (`#090F1D`, `#101B30`, `#9BB1FF`, `#F0C779`, `#86D6B8`) con acceso por token en memoria (`X-Admin-Token`), cuatro pestañas modulares (`OperationalPanel`, `DriftPanel`, `FeedbackAdminPanel`, `DeploymentsPanel`), tablas con desplazamiento horizontal seguro (`overflow-x-auto`) sin desbordamiento en 390 px, y banners explícitos de honestidad metodológica (`Referencia representativa pendiente`, `No disponibles` cuando `n=0` etiquetas verificadas).
