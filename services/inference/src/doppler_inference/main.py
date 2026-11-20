@@ -33,7 +33,8 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         inference_config_path=settings.inference_config_path,
         torch_num_threads=settings.torch_num_threads,
     )
-    # Precompila filtros Mel y kernels STFT/librosa al arranque para evitar penalizar la primera petición
+    # Precompila filtros Mel y kernels STFT/librosa al arranque para evitar
+    # penalizar la primera petición real de inferencia.
     get_mel_basis()
     compute_logmel_window(np.zeros(WINDOW_SAMPLES, dtype=np.float32))
     app.state.engine = InferenceEngine(bundle=bundle, settings=settings)
