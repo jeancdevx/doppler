@@ -1,0 +1,474 @@
+---
+---
+
+<section
+  id='contrato'
+  class='reveal-section mx-auto max-w-[1440px] scroll-mt-20 px-5 py-16 md:px-8 md:py-24'
+  aria-labelledby='contract-heading'
+>
+  <div class='mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end'>
+    <div class='max-w-[680px]'>
+      <span class='caption-4 font-mono text-[#3156d3]'>
+        04 / ARQUITECTURA, R2 PRIVADO Y CONTRATO
+      </span>
+      <h2 id='contract-heading' class='heading-2 mt-3 text-[#172b4d]'>
+        Un modelo. Un criterio consistente.
+      </h2>
+      <p class='body-3 mt-3 text-[#52617b]'>
+        Separación estricta entre transporte, persistencia e inferencia CPU. Sin
+        credenciales en el navegador ni buckets públicos.
+      </p>
+    </div>
+
+    <a
+      href='https://github.com/jeancdevx/doppler-ml/tree/develop'
+      target='_blank'
+      rel='noreferrer'
+      class='interactive-lift button-sm inline-flex min-h-[44px] items-center gap-2 self-start rounded-lg border border-[#d7d9df] bg-white px-4 py-2 text-[#172b4d] hover:border-[#3156d3] hover:text-[#3156d3] md:self-auto'
+    >
+      <span>Consultar repositorio doppler-ml</span>
+      <svg
+        class='size-4'
+        viewBox='0 0 24 24'
+        fill='none'
+        stroke='currentColor'
+        stroke-width='1.6'
+        aria-hidden='true'
+      >
+        <path d='M7 17 17 7M7 7h10v10'></path>
+      </svg>
+    </a>
+  </div>
+
+  <!-- Bento asimétrico de 12 columnas (Linear / Aceternity / Teenage Engineering) -->
+  <div class='grid grid-cols-1 gap-6 lg:grid-cols-12'>
+    <!-- Tarjeta protagonista (7 columnas): Flujo animado Cloudflare R2 + Rust + Python -->
+    <article class='spotlight-card flex flex-col justify-between gap-6 rounded-2xl border border-[#34435c] bg-[#090f1d] p-6 text-[#f5f3ec] sm:p-8 lg:col-span-7'>
+      <div class='flex flex-wrap items-start justify-between gap-4'>
+        <div>
+          <span class='caption-4 font-mono text-[#9bb1ff]'>
+            FLUJO DIRECTO A CLOUDFLARE R2 PRIVADO
+          </span>
+          <h3 class='heading-3 mt-2 text-[#f5f3ec]'>
+            Carga PUT firmada y validación real con HeadObject.
+          </h3>
+        </div>
+        <span class='rounded-full border border-[#34435c] bg-[#101b30] px-3 py-1 font-mono text-[11px] text-[#86d6b8]'>
+          aws-sdk-s3 · S3v4
+        </span>
+      </div>
+
+      <!-- Diagrama SVG animado del circuito real de datos -->
+      <div
+        class='rounded-xl border border-[#34435c]/80 bg-[#0d1629] p-4 sm:p-5'
+        aria-label='Esquema del flujo entre navegador, Cloudflare R2 privado, API Rust y servicio Python'
+      >
+        <svg
+          viewBox='0 0 680 184'
+          class='h-auto w-full'
+          role='img'
+          aria-labelledby='r2-flow-svg-title'
+        >
+          <title id='r2-flow-svg-title'>
+            Flujo de carga presignada en Cloudflare R2 y procesamiento en Rust y Python
+          </title>
+
+          <!-- Conectores base -->
+          <path
+            d='M 152 62 L 258 62'
+            stroke='#34435c'
+            stroke-width='2'
+            fill='none'
+          ></path>
+          <path
+            d='M 152 62 L 258 62'
+            stroke='#9bb1ff'
+            stroke-width='2.2'
+            fill='none'
+            class='signal-flow-line'
+          ></path>
+
+          <path
+            d='M 418 62 L 520 62'
+            stroke='#34435c'
+            stroke-width='2'
+            fill='none'
+          ></path>
+          <path
+            d='M 418 62 L 520 62'
+            stroke='#f0c779'
+            stroke-width='2.2'
+            fill='none'
+            class='signal-flow-line'
+          ></path>
+
+          <path
+            d='M 338 102 L 338 134 L 520 134'
+            stroke='#34435c'
+            stroke-width='1.8'
+            fill='none'
+          ></path>
+          <path
+            d='M 338 102 L 338 134 L 520 134'
+            stroke='#86d6b8'
+            stroke-width='1.8'
+            fill='none'
+            class='signal-flow-line'
+          ></path>
+
+          <!-- Nodo 1: Navegador -->
+          <rect
+            x='10'
+            y='22'
+            width='142'
+            height='80'
+            rx='12'
+            fill='#101b30'
+            stroke='#5a78e6'
+            stroke-width='1.5'
+          ></rect>
+          <text
+            x='24'
+            y='48'
+            fill='#9bb1ff'
+            font-size='10'
+            font-family='IBM Plex Mono, monospace'
+          >
+            01 · CLIENTE
+          </text>
+          <text
+            x='24'
+            y='70'
+            fill='#f5f3ec'
+            font-size='14'
+            font-weight='600'
+            font-family='IBM Plex Sans, sans-serif'
+          >
+            Astro + Svelte
+          </text>
+          <text
+            x='24'
+            y='88'
+            fill='#949fb3'
+            font-size='10.5'
+            font-family='IBM Plex Mono, monospace'
+          >
+            PUT directo CORS
+          </text>
+
+          <!-- Etiqueta flecha 1 -->
+          <text
+            x='205'
+            y='50'
+            text-anchor='middle'
+            fill='#9bb1ff'
+            font-size='10'
+            font-family='IBM Plex Mono, monospace'
+          >
+            PUT firmado
+          </text>
+
+          <!-- Nodo 2: Cloudflare R2 -->
+          <rect
+            x='258'
+            y='22'
+            width='160'
+            height='80'
+            rx='12'
+            fill='#172b4d'
+            stroke='#f0c779'
+            stroke-width='1.6'
+          ></rect>
+          <text
+            x='272'
+            y='48'
+            fill='#f0c779'
+            font-size='10'
+            font-family='IBM Plex Mono, monospace'
+          >
+            02 · PRIVADO
+          </text>
+          <text
+            x='272'
+            y='70'
+            fill='#f5f3ec'
+            font-size='14'
+            font-weight='600'
+            font-family='IBM Plex Sans, sans-serif'
+          >
+            Cloudflare R2
+          </text>
+          <text
+            x='272'
+            y='88'
+            fill='#bdc4d1'
+            font-size='10.5'
+            font-family='IBM Plex Mono, monospace'
+          >
+            doppler-bucket
+          </text>
+
+          <!-- Etiqueta flecha 2 -->
+          <text
+            x='469'
+            y='50'
+            text-anchor='middle'
+            fill='#f0c779'
+            font-size='10'
+            font-family='IBM Plex Mono, monospace'
+          >
+            HEAD + GET
+          </text>
+
+          <!-- Nodo 3: Rust Axum -->
+          <rect
+            x='520'
+            y='22'
+            width='150'
+            height='72'
+            rx='12'
+            fill='#101b30'
+            stroke='#86d6b8'
+            stroke-width='1.5'
+          ></rect>
+          <text
+            x='534'
+            y='46'
+            fill='#86d6b8'
+            font-size='10'
+            font-family='IBM Plex Mono, monospace'
+          >
+            03 · ORQUESTADOR
+          </text>
+          <text
+            x='534'
+            y='66'
+            fill='#f5f3ec'
+            font-size='13.5'
+            font-weight='600'
+            font-family='IBM Plex Sans, sans-serif'
+          >
+            Rust Axum + SQLite
+          </text>
+          <text
+            x='534'
+            y='82'
+            fill='#949fb3'
+            font-size='10'
+            font-family='IBM Plex Mono, monospace'
+          >
+            Sesión HMAC · Cola 1
+          </text>
+
+          <!-- Nodo 4: Python ResNet18 -->
+          <rect
+            x='520'
+            y='108'
+            width='150'
+            height='62'
+            rx='12'
+            fill='#101b30'
+            stroke='#9bb1ff'
+            stroke-width='1.5'
+          ></rect>
+          <text
+            x='534'
+            y='130'
+            fill='#9bb1ff'
+            font-size='10'
+            font-family='IBM Plex Mono, monospace'
+          >
+            04 · INFERENCIA
+          </text>
+          <text
+            x='534'
+            y='149'
+            fill='#f5f3ec'
+            font-size='13'
+            font-weight='600'
+            font-family='IBM Plex Sans, sans-serif'
+          >
+            FastAPI + PyTorch
+          </text>
+          <text
+            x='534'
+            y='163'
+            fill='#949fb3'
+            font-size='9.5'
+            font-family='IBM Plex Mono, monospace'
+          >
+            ResNet18 CPU · 1 proc
+          </text>
+
+          <!-- Nota inferior izquierda -->
+          <text
+            x='12'
+            y='154'
+            fill='#949fb3'
+            font-size='10.5'
+            font-family='IBM Plex Mono, monospace'
+          >
+            Credenciales R2 aisladas exclusivamente en services/api (Rust)
+          </text>
+        </svg>
+      </div>
+
+      <p class='body-6 text-[#bdc4d1]'>
+        El navegador solicita una sesión firmada, sube el WAV directo a R2 con
+        progreso real y confirma. Rust verifica existencia y tamaño real en R2
+        antes de encolar; la reproducción usa una URL GET temporal de corta
+        duración sin abrir el bucket al público.
+      </p>
+    </article>
+
+    <!-- Tarjeta Blueprint del Modelo (5 columnas) -->
+    <article class='spectral-grid-ivory flex flex-col justify-between gap-5 rounded-2xl border border-[#d7d9df] bg-white p-6 sm:p-8 lg:col-span-5'>
+      <div>
+        <span class='caption-4 font-mono text-[#3156d3]'>
+          PARIDAD CON 00_PREPARACION Y 05_RESNET18
+        </span>
+        <h3 class='heading-3 mt-2 text-[#172b4d]'>
+          Contrato acústico sin distorsiones.
+        </h3>
+        <p class='body-6 mt-2 text-[#52617b]'>
+          Carga estricta del checkpoint entrenado sin descargar pesos ImageNet,
+          sin redimensionar a 224×224 y sin recalcular estadísticas.
+        </p>
+      </div>
+
+      <!-- Esquema técnico vertical -->
+      <ol class='flex flex-col gap-2.5 font-mono text-xs'>
+        <li class='flex items-center justify-between rounded-lg border border-[#d7d9df] bg-[#f5f3ec]/70 px-3.5 py-2.5'>
+          <span class='text-[#52617b]'>01 · Entrada WAV</span>
+          <span class='font-medium text-[#172b4d]'>
+            Mono · 16 000 Hz · soxr_hq
+          </span>
+        </li>
+        <li class='flex items-center justify-between rounded-lg border border-[#d7d9df] bg-[#f5f3ec]/70 px-3.5 py-2.5'>
+          <span class='text-[#52617b]'>02 · Amplitud</span>
+          <span class='font-medium text-[#172b4d]'>Pico global 0,99</span>
+        </li>
+        <li class='flex items-center justify-between rounded-lg border border-[#d7d9df] bg-[#f5f3ec]/70 px-3.5 py-2.5'>
+          <span class='text-[#52617b]'>03 · Tensor</span>
+          <span class='font-medium text-[#172b4d]'>
+            Log-Mel (64, 94) × 3 ch
+          </span>
+        </li>
+        <li class='flex items-center justify-between rounded-lg border border-[#3156d3]/30 bg-[#ebefff] px-3.5 py-2.5'>
+          <span class='text-[#2643a8]'>04 · Clasificador</span>
+          <span class='font-semibold text-[#172b4d]'>σ(z) ≥ 0,654784</span>
+        </li>
+      </ol>
+
+      <div class='border-t border-[#d7d9df] pt-3 font-mono text-[11px] text-[#52617b]'>
+        SHA-256 checkpoint verificado: e0dc2eaa1415…f89d2a
+      </div>
+    </article>
+
+    <!-- Fila 2: 3 tarjetas de 4 columnas cada una -->
+    <article class='hover-surface flex flex-col justify-between gap-5 rounded-2xl border border-[#d7d9df] bg-white p-6 transition-colors lg:col-span-4'>
+      <div>
+        <span class='caption-4 font-mono text-[#3156d3]'>
+          COLA PERSISTENTE SQLITE
+        </span>
+        <h3 class='heading-4 mt-2 text-[#172b4d]'>
+          Concurrencia 1 y recuperación tras reinicio.
+        </h3>
+        <p class='body-6 mt-2 text-[#52617b]'>
+          Cada trabajo persiste su estado en SQLite con migraciones versionadas.
+          Si el contenedor API se reinicia, los trabajos interrumpidos se
+          recuperan sin perder trazabilidad.
+        </p>
+      </div>
+
+      <div class='flex flex-col gap-2 font-mono text-[11px]'>
+        <div class='flex items-center justify-between rounded-md border border-[#3156d3]/30 bg-[#ebefff] px-3 py-1.5 text-[#172b4d]'>
+          <span>SLOT 01 · CPU</span>
+          <span class='font-semibold text-[#3156d3]'>ANALYZING (MAX 1)</span>
+        </div>
+        <div class='flex items-center justify-between rounded-md border border-[#d7d9df] bg-[#f5f3ec] px-3 py-1.5 text-[#52617b]'>
+          <span>SLOT 02..16 · COLA</span>
+          <span>ACOTADA FIFO</span>
+        </div>
+      </div>
+    </article>
+
+    <article class='hover-surface flex flex-col justify-between gap-5 rounded-2xl border border-[#d7d9df] bg-white p-6 transition-colors lg:col-span-4'>
+      <div>
+        <span class='caption-4 font-mono text-[#3156d3]'>
+          PRIVACIDAD Y RETENCIÓN
+        </span>
+        <h3 class='heading-4 mt-2 text-[#172b4d]'>
+          Sesión anónima HMAC y purga a las 24 h.
+        </h3>
+        <p class='body-6 mt-2 text-[#52617b]'>
+          Cookie HttpOnly firmada por sesión: nadie puede consultar o borrar
+          trabajos de otra sesión. Un recolector periódico limpia únicamente el
+          prefijo de la aplicación.
+        </p>
+      </div>
+
+      <div class='rounded-lg border border-[#d7d9df] bg-[#f5f3ec] p-3'>
+        <div class='flex items-center justify-between font-mono text-[11px] text-[#172b4d]'>
+          <span>TTL OBJETO R2</span>
+          <span class='tabular-nums'>24 h máx.</span>
+        </div>
+        <div class='mt-2 h-1.5 w-full overflow-hidden rounded-full bg-[#d7d9df]'>
+          <div class='h-full w-3/4 rounded-full bg-[#3156d3]'></div>
+        </div>
+        <p class='mt-2 font-mono text-[10px] text-[#52617b]'>
+          Eliminación manual inmediata en R2 + SQLite desde el estudio.
+        </p>
+      </div>
+    </article>
+
+    <article class='spotlight-card flex flex-col justify-between gap-5 rounded-2xl border border-[#34435c] bg-[#090f1d] p-6 text-[#f5f3ec] lg:col-span-4'>
+      <div>
+        <span class='caption-4 font-mono text-[#9bb1ff]'>
+          DESPLIEGUE REPRODUCIBLE
+        </span>
+        <h3 class='heading-4 mt-2 text-[#f5f3ec]'>
+          Docker Compose fijado, sin etiquetas latest.
+        </h3>
+        <p class='body-6 mt-2 text-[#bdc4d1]'>
+          Tres contenedores ligeros orquestados en red interna con puertos de
+          depuración únicamente en loopback y archivos de bloqueo congelados.
+        </p>
+      </div>
+
+      <ul class='flex flex-col gap-1.5 border-t border-[#34435c] pt-3 font-mono text-[11px] text-[#9bb1ff]'>
+        <li class='flex justify-between'>
+          <span>web / caddy</span>
+          <span class='text-[#f5f3ec]'>:4321 → Astro + /api</span>
+        </li>
+        <li class='flex justify-between'>
+          <span>api / rust</span>
+          <span class='text-[#f5f3ec]'>Axum + SQLx + R2</span>
+        </li>
+        <li class='flex justify-between'>
+          <span>inference / py</span>
+          <span class='text-[#f5f3ec]'>FastAPI + Torch CPU</span>
+        </li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<script>
+  const finePointer = window.matchMedia(
+    '(hover: hover) and (pointer: fine)'
+  ).matches
+
+  if (finePointer) {
+    document.querySelectorAll<HTMLElement>('.spotlight-card').forEach(card => {
+      card.addEventListener('pointermove', event => {
+        const rect = card.getBoundingClientRect()
+        const x = event.clientX - rect.left
+        const y = event.clientY - rect.top
+
+        card.style.setProperty('--spot-x', `${x}px`)
+        card.style.setProperty('--spot-y', `${y}px`)
+      })
+    })
+  }
+</script>
