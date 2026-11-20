@@ -1,0 +1,42 @@
+# Secretos y entorno local (NUNCA versionar)
+.env
+.env.*
+!.env.example
+
+# Datos de ejecución y SQLite
+data/
+*.db
+*.db-shm
+*.db-wal
+*.sqlite*
+
+# Dependencias y artefactos de compilación
+node_modules/
+apps/web/node_modules/
+apps/web/dist/
+apps/web/.astro/
+services/api/target/
+services/inference/.venv/
+services/inference/.pytest_cache/
+services/inference/.ruff_cache/
+**/__pycache__/
+*.py[cod]
+.venv/
+
+# Salidas temporales de pruebas y empaquetado
+test-results/
+playwright-report/
+.pytest_cache/
+tmp/
+*.log
+evidence/
+evidence/*.zip
+evidence/*.zip.sha256
+Doppler_Espectro_Brand_Kit/
+
+# Agents
+.agents/
+skills-lock.json
+
+# Media
+media/
