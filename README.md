@@ -47,6 +47,10 @@ evaluación de precisión sobre grabaciones reales.
   audio, del modelo y del contrato para identificar la ejecución.
 - **Gestionar los trabajos de tu sesión:** historial, reproducción mediante URLs
   temporales y eliminación; retención automática configurable.
+- **Reportar discrepancias y operar el mantenimiento:** formulario integrado de
+  retroalimentación por ventana en el Estudio y consola administrativa
+  `/mantenimiento` protegida por `X-Admin-Token` para salud en vivo, incidentes,
+  latencias desacopladas (30 días), drift entrada/salida y auditoría de modelo.
 
 ## Cómo interpretar los resultados
 
@@ -122,6 +126,7 @@ Completa al menos estas variables en `.env`:
 | `R2_SECRET_ACCESS_KEY` | Secreto de la credencial S3 API. |
 | `R2_BUCKET` | Nombre del bucket privado. |
 | `SESSION_HMAC_SECRET` | Secreto aleatorio para firmar las sesiones anónimas. |
+| `ADMIN_API_TOKEN` | Token administrativo local para `/api/admin/*` y `/mantenimiento`. |
 
 Genera el secreto y copia el valor en `SESSION_HMAC_SECRET`:
 
@@ -324,5 +329,6 @@ Los artefactos originales en `Doppler_Espectro_Brand_Kit/`, las credenciales en
 | Configurar bucket, permisos, CORS y prefijos | [Configuración de R2](docs/r2-setup.md) |
 | Ejecutar la validación técnica | [Guía de pruebas](docs/testing.md) |
 | Generar y auditar informes reproducibles | [Guía de evidencias](docs/evidence.md) |
+| Operar monitoreo, drift, retroalimentación y actualizaciones del modelo | [Monitoreo y Mantenimiento](docs/maintenance-operations.md) |
 | Resolver fallos de arranque, subida o inferencia | [Solución de problemas](docs/troubleshooting.md) |
 | Contribuir siguiendo las convenciones del proyecto | [Guía de ingeniería](AGENTS.md) · [Sistema de diseño](DESIGN.md) |

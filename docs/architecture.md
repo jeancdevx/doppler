@@ -32,13 +32,18 @@ Doppler separa la presentación, la orquestación con almacenamiento en la nube 
 9. El frontend muestra forma de onda real, espectrograma STFT/Mel calculado en el navegador, tabla sincronizada de ventanas y permite reproducir el original mediante `GET /api/jobs/{id}/audio-url` (URL temporal privada) y exportar JSON o CSV.
 10. El usuario puede eliminar inmediatamente el objeto de R2 y el registro SQLite (`DELETE /api/jobs/{id}`), o dejar que la retención automática de 24 h los purgue.
 
-## 3. Cómo reemplazar el checkpoint del modelo de forma segura
+## 3. Cómo reemplazar el checkpoint del modelo de forma segura (Capítulo 10.2)
 
-Los visitantes de la web **no pueden** cargar modelos arbitrarios. El reemplazo del checkpoint es una operación exclusiva del administrador en el host:
+Los visitantes de la web **no pueden** cargar modelos arbitrarios. `docker-compose.yml` monta `${ACTIVE_MODEL_DIR:-./models/active}:/models:ro` (conservando intocada la carpeta original `Doppler_Espectro_Brand_Kit/model/`) y la promoción se ejecuta mediante el gestor versionado `scripts/model_manager.py`:
 
-1. Verificar que el nuevo archivo `.pt` conserve el formato exportado por `05_resnet18.ipynb` (`state_dict`, `model_kind: "resnet"`, `params.dropout`, `normalization_mean`, `normalization_std`, `threshold`, `input_shape: [64, 94]`, `class_map`) y que su `inference.json` acompañante coincida exactamente en umbral y estadísticas.
-2. Registrar los nuevos hashes SHA-256 en `docs/model-contract.md`.
-3. Actualizar `MODEL_PATH` e `INFERENCE_CONFIG_PATH` en `.env` (o reemplazar el archivo montado en solo lectura en `docker-compose.yml`).
-4. Reiniciar el servicio de inferencia: `docker compose restart inference`.
-5. Comprobar en `curl -s http://localhost:4321/api/health` que `inference.ready` es `true` y que `model_sha256` y `threshold` coinciden con el nuevo artefacto.
-6. Reejecutar las pruebas de paridad independiente antes de considerar válido el reemplazo.
+1. Construir un paquete inmutable en `models/packages/<version>/` con `model.pt`, `inference.json` y `manifest.json` (hashes SHA-256 y versión de contrato).
+2. Validar offline sin red: `python3 scripts/model_manager.py validate models/packages/<version>` (`docker run --network none`, verificación SHA-256, contrato, umbral `0.6547843813896179`, carga estricta CPU e inferencia de prueba).
+3. Activar de forma controlada: `python3 scripts/model_manager.py activate models/packages/<version> --reason "..."` (activa modo mantenimiento HTTP 503, espera `analyzing_active == 0`, respalda en `models/backups/`, actualiza `models/active/`, reinicia `inference`, verifica `/api/ready` + SHA-256 y ejecuta rollback automático si algo falla).
+4. Consultar el historial de despliegues, monitoreo, drift y retroalimentación en `/mantenimiento` (ver [docs/maintenance-operations.md](maintenance-operations.md)).
+
+## 4. Estructura modular desacoplada de `services/api`
+
+Para mantener claridad y sostenibilidad, la API Rust está dividida por responsabilidad:
+- `src/routes/{mod,auth,health,uploads,jobs,feedback,admin}.rs`: controladores HTTP y enrutador.
+- `src/db/{mod,models,sessions,jobs,results}.rs`: persistencia SQLite de sesiones, cola y resultados.
+- `src/maintenance/{mod,auth,health,telemetry,drift,feedback,deployments}.rs`: sondas de salud, incidentes, telemetría desacoplada 30 días, motor de drift Wasserstein 1D, máquina de estados de retroalimentación y auditoría de despliegues.
