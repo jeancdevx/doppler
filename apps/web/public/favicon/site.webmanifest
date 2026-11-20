@@ -1,0 +1,19 @@
+{
+  "name": "Doppler",
+  "short_name": "Doppler",
+  "icons": [
+    {
+      "src": "doppler-app-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "doppler-app-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#090F1D",
+  "background_color": "#F5F3EC",
+  "display": "standalone"
+}
