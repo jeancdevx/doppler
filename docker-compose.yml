@@ -1,0 +1,97 @@
+name: doppler
+
+services:
+  inference:
+    build:
+      context: ./services/inference
+      dockerfile: Dockerfile
+    image: doppler-inference:1.0.0
+    restart: unless-stopped
+    environment:
+      CONTAINER_MODEL_PATH: ${CONTAINER_MODEL_PATH:-/models/model.pt}
+      CONTAINER_INFERENCE_CONFIG_PATH: ${CONTAINER_INFERENCE_CONFIG_PATH:-/models/inference.json}
+      MAX_FILE_BYTES: ${MAX_FILE_BYTES:-26214400}
+      MAX_DURATION_SECONDS: ${MAX_DURATION_SECONDS:-120}
+      TORCH_NUM_THREADS: ${TORCH_NUM_THREADS:-4}
+      OMP_NUM_THREADS: ${OMP_NUM_THREADS:-4}
+      OPENBLAS_NUM_THREADS: ${OPENBLAS_NUM_THREADS:-1}
+      MKL_NUM_THREADS: ${MKL_NUM_THREADS:-1}
+    volumes:
+      - ./Doppler_Espectro_Brand_Kit/model:/models:ro
+    ports:
+      - '127.0.0.1:${INFERENCE_DEBUG_PORT:-18090}:8000'
+    networks:
+      - doppler-internal
+    healthcheck:
+      test: ['CMD', 'curl', '-fsS', 'http://127.0.0.1:8000/ready']
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  api:
+    build:
+      context: ./services/api
+      dockerfile: Dockerfile
+    image: doppler-api:1.0.0
+    restart: unless-stopped
+    depends_on:
+      inference:
+        condition: service_healthy
+    environment:
+      API_BIND_ADDR: 0.0.0.0:8080
+      DATABASE_URL: ${DATABASE_URL:-sqlite:///data/doppler.db?mode=rwc}
+      APP_ORIGIN: ${APP_ORIGIN:-http://localhost:4321}
+      R2_ACCOUNT_ID: ${R2_ACCOUNT_ID}
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY}
+      R2_BUCKET: ${R2_BUCKET}
+      R2_PREFIX: ${R2_PREFIX:-doppler/uploads/}
+      R2_REGION: ${R2_REGION:-auto}
+      R2_ENDPOINT: ${R2_ENDPOINT:-}
+      MAX_FILE_BYTES: ${MAX_FILE_BYTES:-26214400}
+      MAX_DURATION_SECONDS: ${MAX_DURATION_SECONDS:-120}
+      MAX_CONCURRENT_INFERENCE: ${MAX_CONCURRENT_INFERENCE:-1}
+      MAX_QUEUE_DEPTH: ${MAX_QUEUE_DEPTH:-16}
+      PRESIGN_PUT_TTL_SECONDS: ${PRESIGN_PUT_TTL_SECONDS:-300}
+      PRESIGN_GET_TTL_SECONDS: ${PRESIGN_GET_TTL_SECONDS:-180}
+      RETENTION_HOURS: ${RETENTION_HOURS:-24}
+      CLEANUP_INTERVAL_SECONDS: ${CLEANUP_INTERVAL_SECONDS:-300}
+      RATE_LIMIT_UPLOADS_PER_HOUR: ${RATE_LIMIT_UPLOADS_PER_HOUR:-60}
+      INFERENCE_SERVICE_URL: http://inference:8000
+      INFERENCE_TIMEOUT_SECONDS: ${INFERENCE_TIMEOUT_SECONDS:-120}
+      SESSION_HMAC_SECRET: ${SESSION_HMAC_SECRET}
+      RUST_LOG: ${RUST_LOG:-doppler_api=info,tower_http=info}
+    volumes:
+      - doppler_sqlite_data:/data
+    ports:
+      - '127.0.0.1:${API_DEBUG_PORT:-18080}:8080'
+    networks:
+      - doppler-internal
+    healthcheck:
+      test: ['CMD', 'curl', '-fsS', 'http://127.0.0.1:8080/api/health']
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  web:
+    build:
+      context: .
+      dockerfile: ./apps/web/Dockerfile
+    image: doppler-web-caddy:1.0.0
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - '127.0.0.1:${CADDY_PORT:-4321}:4321'
+    networks:
+      - doppler-internal
+
+networks:
+  doppler-internal:
+    driver: bridge
+
+volumes:
+  doppler_sqlite_data:
