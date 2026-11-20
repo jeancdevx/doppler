@@ -14,6 +14,21 @@ class WindowPrediction(BaseModel):
     margin_vs_threshold: float
 
 
+class ObservationalAudioStats(BaseModel):
+    """Métricas acústicas estrictamente observacionales para monitoreo y drift.
+
+    Nunca modifican la señal ni las entradas del clasificador ResNet18.
+    """
+
+    extraction_version: str = "obs_v1"
+    rms_before_normalization: float = Field(ge=0.0)
+    silence_ratio: float = Field(ge=0.0, le=1.0)
+    clipping_ratio: float = Field(ge=0.0, le=1.0)
+    logmel_mean: float | None = None
+    logmel_std: float | None = None
+    spectral_centroid_hz: float | None = None
+
+
 class AudioMetadata(BaseModel):
     original_sample_rate: int = Field(gt=0)
     original_channels: int = Field(ge=1)
@@ -29,6 +44,7 @@ class AudioMetadata(BaseModel):
     discarded_tail_seconds: float = Field(ge=0.0)
     window_seconds: float = Field(gt=0.0)
     hop_seconds: float = Field(gt=0.0)
+    observational: ObservationalAudioStats | None = None
 
 
 class StageTimings(BaseModel):

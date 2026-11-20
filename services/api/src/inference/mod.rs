@@ -31,6 +31,17 @@ pub struct InferenceWindow {
     pub margin_vs_threshold: f64,
 }
 
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct InferenceObservationalStats {
+    pub extraction_version: String,
+    pub rms_before_normalization: f64,
+    pub silence_ratio: f64,
+    pub clipping_ratio: f64,
+    pub logmel_mean: Option<f64>,
+    pub logmel_std: Option<f64>,
+    pub spectral_centroid_hz: Option<f64>,
+}
+
 #[derive(Debug, Clone, Deserialize)]
 pub struct InferenceAudioMetadata {
     pub original_sample_rate: i64,
@@ -47,6 +58,8 @@ pub struct InferenceAudioMetadata {
     pub discarded_tail_seconds: f64,
     pub window_seconds: f64,
     pub hop_seconds: f64,
+    #[serde(default)]
+    pub observational: Option<InferenceObservationalStats>,
 }
 
 #[derive(Debug, Clone, Deserialize)]

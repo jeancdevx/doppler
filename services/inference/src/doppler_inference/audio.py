@@ -26,7 +26,7 @@ from doppler_inference.config import (
     WINDOW_SAMPLES,
     WINDOW_SECONDS,
 )
-from doppler_inference.schemas import AudioMetadata
+from doppler_inference.schemas import AudioMetadata, ObservationalAudioStats
 
 
 class AudioValidationError(Exception):
@@ -174,8 +174,14 @@ def prepare_wav_bytes(data: bytes, max_duration_seconds: float) -> PreparedAudio
         )
 
     raw_peak = float(np.max(np.abs(raw_audio)))
-    mono = raw_audio.mean(axis=1).astype(np.float32)
+    raw_mono = raw_audio.mean(axis=1).astype(np.float32)
 
+    # Mediciones estrictamente observacionales previas a la normalización (no alteran la señal)
+    rms_before_norm = float(np.sqrt(np.mean(raw_mono.astype(np.float64) ** 2)))
+    silence_ratio = float(np.mean(np.abs(raw_mono) <= SILENCE_PEAK))
+    clipping_ratio = float(np.mean(np.abs(raw_audio) >= 0.999))
+
+    mono = raw_mono
     if original_sr != SAMPLE_RATE:
         mono = librosa.resample(
             mono,
@@ -197,6 +203,14 @@ def prepare_wav_bytes(data: bytes, max_duration_seconds: float) -> PreparedAudio
     starts = list(range(0, max(0, prepared_samples - WINDOW_SAMPLES + 1), HOP_SAMPLES))
 
     if not starts:
+        observational = ObservationalAudioStats(
+            rms_before_normalization=rms_before_norm,
+            silence_ratio=silence_ratio,
+            clipping_ratio=clipping_ratio,
+            logmel_mean=None,
+            logmel_std=None,
+            spectral_centroid_hz=None,
+        )
         metadata = AudioMetadata(
             original_sample_rate=original_sr,
             original_channels=original_channels,
@@ -212,6 +226,7 @@ def prepare_wav_bytes(data: bytes, max_duration_seconds: float) -> PreparedAudio
             discarded_tail_seconds=prepared_duration,
             window_seconds=WINDOW_SECONDS,
             hop_seconds=HOP_SECONDS,
+            observational=observational,
         )
         return PreparedAudio(
             metadata=metadata,
@@ -233,6 +248,23 @@ def prepare_wav_bytes(data: bytes, max_duration_seconds: float) -> PreparedAudio
         axis=0,
     ).astype(np.float32)
 
+    # Resúmenes observacionales sobre los Log-Mel ya calculados (solo lectura)
+    mel_freqs = librosa.mel_frequencies(n_mels=N_MELS, fmin=FMIN, fmax=FMAX, htk=False)
+    linear_power = np.power(10.0, logmels.astype(np.float64) / 10.0)
+    band_weights = linear_power.mean(axis=(0, 2))
+    weight_sum = float(np.sum(band_weights))
+    spectral_centroid_hz = (
+        float(np.sum(band_weights * mel_freqs) / weight_sum) if weight_sum > 0.0 else 0.0
+    )
+    observational = ObservationalAudioStats(
+        rms_before_normalization=rms_before_norm,
+        silence_ratio=silence_ratio,
+        clipping_ratio=clipping_ratio,
+        logmel_mean=float(np.mean(logmels, dtype=np.float64)),
+        logmel_std=float(np.std(logmels, dtype=np.float64)),
+        spectral_centroid_hz=spectral_centroid_hz,
+    )
+
     metadata = AudioMetadata(
         original_sample_rate=original_sr,
         original_channels=original_channels,
@@ -248,6 +280,7 @@ def prepare_wav_bytes(data: bytes, max_duration_seconds: float) -> PreparedAudio
         discarded_tail_seconds=discarded_tail_samples / float(SAMPLE_RATE),
         window_seconds=WINDOW_SECONDS,
         hop_seconds=HOP_SECONDS,
+        observational=observational,
     )
     return PreparedAudio(
         metadata=metadata,
