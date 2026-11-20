@@ -17,7 +17,7 @@ services:
       OPENBLAS_NUM_THREADS: ${OPENBLAS_NUM_THREADS:-1}
       MKL_NUM_THREADS: ${MKL_NUM_THREADS:-1}
     volumes:
-      - ./Doppler_Espectro_Brand_Kit/model:/models:ro
+      - ${ACTIVE_MODEL_DIR:-./models/active}:/models:ro
     ports:
       - '127.0.0.1:${INFERENCE_DEBUG_PORT:-18090}:8000'
     networks:
@@ -61,6 +61,12 @@ services:
       INFERENCE_SERVICE_URL: http://inference:8000
       INFERENCE_TIMEOUT_SECONDS: ${INFERENCE_TIMEOUT_SECONDS:-120}
       SESSION_HMAC_SECRET: ${SESSION_HMAC_SECRET}
+      ADMIN_API_TOKEN: ${ADMIN_API_TOKEN:-}
+      HEALTH_CHECK_INTERVAL_SECONDS: ${HEALTH_CHECK_INTERVAL_SECONDS:-60}
+      INCIDENT_FAILURE_THRESHOLD: ${INCIDENT_FAILURE_THRESHOLD:-3}
+      HISTORY_RETENTION_DAYS: ${HISTORY_RETENTION_DAYS:-30}
+      RATE_LIMIT_FEEDBACK_PER_HOUR: ${RATE_LIMIT_FEEDBACK_PER_HOUR:-30}
+      TELEMETRY_REDACT_ON_USER_DELETE: ${TELEMETRY_REDACT_ON_USER_DELETE:-false}
       RUST_LOG: ${RUST_LOG:-doppler_api=info,tower_http=info}
     volumes:
       - doppler_sqlite_data:/data
