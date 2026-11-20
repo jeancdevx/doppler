@@ -211,4 +211,38 @@ impl R2Storage {
             .map_err(|e| ApiError::R2(format!("bucket R2 inaccesible: {e}")))?;
         Ok(())
     }
+
+    pub async fn measure_prefix_usage(&self) -> Result<(i64, i64), ApiError> {
+        let mut total_bytes: i64 = 0;
+        let mut total_objects: i64 = 0;
+        let mut continuation: Option<String> = None;
+        for _ in 0..20 {
+            let mut req = self
+                .client
+                .list_objects_v2()
+                .bucket(&self.bucket)
+                .prefix(&self.prefix)
+                .max_keys(1000);
+            if let Some(ref token) = continuation {
+                req = req.continuation_token(token);
+            }
+            let out = req
+                .send()
+                .await
+                .map_err(|e| ApiError::R2(format!("falló ListObjectsV2 bajo prefijo Doppler: {e}")))?;
+            for obj in out.contents() {
+                total_objects += 1;
+                total_bytes += obj.size().unwrap_or(0).max(0);
+            }
+            if out.is_truncated().unwrap_or(false) {
+                continuation = out.next_continuation_token().map(|s| s.to_string());
+                if continuation.is_none() {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+        Ok((total_bytes, total_objects))
+    }
 }
