@@ -1,0 +1,41 @@
+{
+  "name": "doppler-deploy",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "prepare": "husky",
+    "dev:web": "pnpm --filter @doppler/web dev",
+    "build:web": "pnpm --filter @doppler/web build",
+    "check:web": "pnpm --filter @doppler/web check",
+    "lint": "oxlint",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
+    "test:e2e": "playwright test",
+    "evidence:generate": "python3 scripts/generate_evidence.py",
+    "evidence:pack": "python3 scripts/pack_evidence.py"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "21.2.4",
+    "@commitlint/config-conventional": "21.2.4",
+    "@elevenlabs/elevenlabs-js": "2.79.0",
+    "@playwright/test": "1.65.1",
+    "@stylistic/eslint-plugin": "6.0.1",
+    "husky": "9.1.7",
+    "lint-staged": "17.6.1",
+    "oxfmt": "0.79.0",
+    "oxlint": "1.94.0"
+  },
+  "lint-staged": {
+    "apps/web/src/**/*.{ts,tsx,js,mjs,astro,svelte,css,json}": [
+      "oxfmt --no-error-on-unmatched-pattern",
+      "oxlint"
+    ],
+    "*.{json,mjs,ts,js}": [
+      "oxfmt --no-error-on-unmatched-pattern"
+    ]
+  },
+  "packageManager": "pnpm@10.0.0"
+}

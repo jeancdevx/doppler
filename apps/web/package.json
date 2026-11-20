@@ -1,0 +1,30 @@
+{
+  "name": "@doppler/web",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev --host 127.0.0.1 --port 4321",
+    "build": "astro build",
+    "preview": "astro preview --host 127.0.0.1 --port 4321",
+    "check": "astro check && svelte-check --tsconfig ./tsconfig.json"
+  },
+  "dependencies": {
+    "@astrojs/svelte": "9.1.6",
+    "@tailwindcss/vite": "4.3.5",
+    "astro": "7.4.13",
+    "bits-ui": "2.21.0",
+    "clsx": "2.1.1",
+    "phosphor-svelte": "3.1.1",
+    "svelte": "5.58.0",
+    "svelte-sonner": "1.2.3",
+    "tailwind-merge": "3.7.1",
+    "tailwind-variants": "4.0.2",
+    "tailwindcss": "4.3.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "svelte-check": "4.7.8",
+    "typescript": "5.8.3"
+  }
+}
