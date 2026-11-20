@@ -32,15 +32,32 @@ export interface InferenceHealth {
   startup_load_ms: number | null
 }
 
+export interface ComponentCheck {
+  status: 'healthy' | 'degraded' | 'unavailable' | 'unknown'
+  latency_ms: number | null
+  detail: string | null
+}
+
 export interface HealthResponse {
   status: 'ok' | 'degraded'
+  overall_status?: 'healthy' | 'degraded' | 'unavailable' | 'unknown'
+  ready?: boolean
+  maintenance_mode?: boolean
+  maintenance_reason?: string | null
   api: string
   database: string
   r2_configured: boolean
   r2_reachable: boolean
-  queue_active: number
+  queue_active: number | null
+  analyzing_active?: number | null
   max_queue_depth: number
   max_concurrent_inference: number
+  components?: {
+    api: ComponentCheck
+    sqlite: ComponentCheck
+    inference: ComponentCheck
+    r2: ComponentCheck
+  }
   limits: LimitsInfo
   inference: InferenceHealth | null
 }
@@ -279,6 +296,71 @@ export async function deleteJob(jobId: string): Promise<void> {
 
 export function getExportUrl(jobId: string, format: 'json' | 'csv'): string {
   return `/api/jobs/${encodeURIComponent(jobId)}/export?format=${format}`
+}
+
+export type FeedbackType =
+  | 'false_alarm'
+  | 'missed_emergency'
+  | 'technical_issue'
+  | 'uncertain_or_other'
+
+export type FeedbackReviewStatus =
+  | 'received'
+  | 'in_review'
+  | 'confirmed'
+  | 'dismissed'
+  | 'insufficient_evidence'
+  | 'resolved'
+
+export interface FeedbackReport {
+  id: string
+  job_id: string
+  window_index: number | null
+  feedback_type: FeedbackType
+  comment: string | null
+  displayed_label: string | null
+  displayed_score: number | null
+  displayed_threshold: number | null
+  window_start_seconds: number | null
+  window_end_seconds: number | null
+  model_sha256: string | null
+  contract_version: string | null
+  contract_sha256: string | null
+  audio_available_at_report: boolean
+  audio_currently_available: boolean
+  audio_expires_at: string | null
+  review_status: FeedbackReviewStatus
+  verified_label: string | null
+  resolution_note: string | null
+  created_at: string
+  updated_at: string
+  reviewed_at: string | null
+  resolved_at: string | null
+}
+
+export interface CreateFeedbackPayload {
+  feedback_type: FeedbackType
+  window_index: number | null
+  comment: string | null
+}
+
+export function listJobFeedback(jobId: string): Promise<FeedbackReport[]> {
+  return requestJson<FeedbackReport[]>(
+    `/api/jobs/${encodeURIComponent(jobId)}/feedback`
+  )
+}
+
+export function createJobFeedback(
+  jobId: string,
+  payload: CreateFeedbackPayload
+): Promise<FeedbackReport> {
+  return requestJson<FeedbackReport>(
+    `/api/jobs/${encodeURIComponent(jobId)}/feedback`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    }
+  )
 }
 
 export interface UploadProgressInfo {
