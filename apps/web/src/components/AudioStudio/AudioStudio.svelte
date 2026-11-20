@@ -16,6 +16,7 @@
   import { Toaster, toast } from 'svelte-sonner'
 
   import { AudioDropzone } from '@/components/AudioDropzone'
+  import { FeedbackPanel } from '@/components/FeedbackPanel'
   import { MetricGrid } from '@/components/MetricGrid'
   import {
     PipelineStepper,
@@ -757,12 +758,21 @@
 
     <div class="flex flex-wrap items-center gap-2">
       {#if health}
-        <Badge tone={health.status === 'ok' ? 'ok' : 'error'} dot>
-          {health.status === 'ok'
-            ? 'Modelo + R2 listos'
-            : health.r2_reachable
-              ? 'Inferencia iniciando'
-              : 'Revisar R2'}
+        <Badge
+          tone={health.maintenance_mode
+            ? 'target'
+            : health.status === 'ok'
+              ? 'ok'
+              : 'error'}
+          dot
+        >
+          {health.maintenance_mode
+            ? 'Mantenimiento activo'
+            : health.status === 'ok'
+              ? 'Modelo + R2 listos'
+              : health.r2_reachable
+                ? 'Inferencia iniciando'
+                : 'Revisar R2'}
         </Badge>
       {:else}
         <Badge tone="neutral">Verificando estado…</Badge>
@@ -1241,6 +1251,8 @@
             onSelect={handleSelectWindow}
           />
         {/if}
+
+        <FeedbackPanel job={activeJob} {selectedWindowIndex} />
 
         <TraceabilityPanel job={activeJob} />
       {/if}
