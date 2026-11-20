@@ -39,3 +39,15 @@ El empaquetador audita automáticamente que no existan secretos, cookies, URLs f
 ```bash
 sha256sum -c evidence/<run_id>.zip.sha256
 ```
+
+## 4. Evidencias del Capítulo 10 (Monitoreo y Mantenimiento)
+
+Para generar y empaquetar las evidencias verificables de las secciones **10.1**, **10.2** y **10.3** (incluyendo Figuras **34, 35, 36**, Tablas **44, 45, 46**, experimentos de drift, ensayo de actualización/rollback y capturas reales de `/mantenimiento` sin secretos):
+
+```bash
+pnpm run evidence:maintenance
+pnpm run evidence:maintenance:pack -- evidence/maintenance_<run_id>
+sha256sum -c evidence/maintenance_<run_id>.zip.sha256
+```
+
+El auditor anti-secretos (`scripts/pack_evidence.py`) bloquea adicionalmente `ADMIN_API_TOKEN`, encabezados `X-Admin-Token` y cualquier archivo `.db`/`.sqlite*`.

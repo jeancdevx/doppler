@@ -49,3 +49,20 @@ pnpm run test:e2e
 ```
 
 Playwright verifica escritorio `1440×900`, móvil `390×844` sin desbordamiento horizontal, navegación por teclado y foco, tema claro/oscuro del estudio, `prefers-reduced-motion: reduce`, error recuperable con archivo falso, página 404 y flujo E2E completo desde el navegador hacia R2 (este último requiere CORS configurado en el bucket).
+
+## 6. Pruebas del Capítulo 10 (Monitoreo, Drift, Retroalimentación y Actualización de Modelo)
+
+```bash
+# Integración real: /api/ready (200/503), auth X-Admin-Token (401), incidentes y auto-recuperación,
+# telemetría 30 d tras borrado 24 h, aislamiento y máquina de estados de feedback, modo mantenimiento
+python3 tests/integration/test_maintenance_and_feedback.py
+
+# Experimentos controlados de drift (referencia sintética + 5 escenarios con semilla fija)
+python3 scripts/drift_engine.py --out-dir /tmp/doppler_drift_test
+
+# Ensayo controlado de validación offline, rechazo de paquetes inválidos, activación y rollback automático
+python3 scripts/model_manager.py drill
+
+# E2E Playwright del formulario de retroalimentación y consola /mantenimiento (escritorio + móvil)
+pnpm exec playwright test tests/e2e/maintenance.spec.ts
+```

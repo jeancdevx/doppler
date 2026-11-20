@@ -22,3 +22,11 @@
 
 ## 6. Trabajo interrumpido al reiniciar el contenedor `api`
 - **Comportamiento esperado:** Al arrancar, `doppler-api` ejecuta `recover_interrupted_jobs()` y devuelve cualquier trabajo en estado `analyzing` al estado `queued` en SQLite para reintentarlo automáticamente.
+
+## 7. HTTP `503 maintenance_mode` al intentar subir un WAV
+- **Causa:** El modo mantenimiento está activado (desde `/mantenimiento` o durante una ejecución de `scripts/model_manager.py activate`).
+- **Solución:** Espera a que concluya la actualización o desactívalo en `/mantenimiento` (o `POST /api/admin/maintenance` con `{"enabled": false}`).
+
+## 8. HTTP `503` o `401` al acceder a `/mantenimiento` o `/api/admin/*`
+- **Causa:** Si devuelve `503`, `ADMIN_API_TOKEN` no está configurado en `.env` o conserva un valor plantilla `replace_with_*`. Si devuelve `401`, el token ingresado no coincide con el configurado en el contenedor `api`.
+- **Solución:** Define un token aleatorio de 64 caracteres hex en `.env` (`ADMIN_API_TOKEN=...`) y recrea el servicio `docker compose up -d api`.
