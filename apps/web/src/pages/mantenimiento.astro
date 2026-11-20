@@ -1,0 +1,49 @@
+---
+import Footer from '@/components/Footer/Footer.astro'
+import { MaintenanceConsole } from '@/components/MaintenanceConsole'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+
+import '@/styles/global.css'
+---
+
+<BaseLayout
+  title='Mantenimiento y Monitoreo — Doppler'
+  description='Consola interna de monitoreo operativo, detección de drift, retroalimentación revisada y control de despliegues del modelo ResNet18.'
+>
+  <header class='border-b border-[#34435c] bg-[#090f1d] text-[#f5f3ec]'>
+    <div class='mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-4 px-5 py-4 md:px-8'>
+      <a
+        href='/'
+        aria-label='Volver a Doppler'
+        class='inline-flex items-center gap-3'
+      >
+        <img
+          src='/logos/doppler-horizontal-reverse.svg'
+          alt='doppler'
+          width='128'
+          height='30'
+          class='h-7 w-auto'
+        />
+        <span class='rounded-md border border-[#34435c] bg-[#101b30] px-2 py-0.5 font-mono text-[10px] tracking-[0.06em] text-[#9bb1ff]'>
+          MANTENIMIENTO
+        </span>
+      </a>
+
+      <a
+        href='/#studio'
+        class='inline-flex min-h-[36px] items-center rounded-lg border border-[#34435c] bg-[#101b30] px-3.5 text-xs font-medium text-[#f5f3ec] transition-colors hover:border-[#9bb1ff]'
+      >
+        ← Volver al estudio
+      </a>
+    </div>
+  </header>
+
+  <main
+    id='contenido-principal'
+    class='mx-auto max-w-[1440px] px-4 py-8 sm:px-6 md:px-8'
+  >
+    <MaintenanceConsole client:load />
+  </main>
+
+  <Footer />
+</BaseLayout>
