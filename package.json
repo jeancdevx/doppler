@@ -15,7 +15,9 @@
     "docker:logs": "docker compose logs -f",
     "test:e2e": "playwright test",
     "evidence:generate": "python3 scripts/generate_evidence.py",
-    "evidence:pack": "python3 scripts/pack_evidence.py"
+    "evidence:pack": "python3 scripts/pack_evidence.py",
+    "evidence:maintenance": "python3 scripts/generate_maintenance_evidence.py",
+    "evidence:maintenance:pack": "python3 scripts/pack_evidence.py"
   },
   "devDependencies": {
     "@commitlint/cli": "21.2.4",

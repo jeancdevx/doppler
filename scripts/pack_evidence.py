@@ -12,12 +12,25 @@ from pathlib import Path
 
 FORBIDDEN_PATTERNS = [
     re.compile(r"R2_SECRET_ACCESS_KEY\s*=\s*(?!replace_with_)\S+"),
+    re.compile(r"R2_ACCESS_KEY_ID\s*=\s*(?!replace_with_)\S+"),
+    re.compile(r"ADMIN_API_TOKEN\s*=\s*(?!replace_with_)\S+"),
+    re.compile(r"X-Admin-Token\s*:\s*\S+", re.IGNORECASE),
     re.compile(r"X-Amz-Signature=[0-9a-f]{32,}"),
     re.compile(r"doppler_session=[0-9a-f]{16,}\.[0-9a-f]{64}"),
     re.compile(r"SESSION_HMAC_SECRET\s*=\s*(?!replace_with_)\S+"),
 ]
 
-FORBIDDEN_EXTENSIONS = {".pt", ".pth", ".wav", ".env"}
+FORBIDDEN_EXTENSIONS = {
+    ".pt",
+    ".pth",
+    ".wav",
+    ".env",
+    ".db",
+    ".sqlite",
+    ".sqlite3",
+    ".sqlite-wal",
+    ".sqlite-shm",
+}
 
 
 def sha256_file(path: Path) -> str:
