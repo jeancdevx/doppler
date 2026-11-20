@@ -1,0 +1,56 @@
+---
+const words = [
+  'Cada',
+  'ventana',
+  'de',
+  'tres',
+  'segundos',
+  'conserva',
+  'su',
+  'contexto',
+  'acústico.',
+  'Escucha',
+  'la',
+  'señal,',
+  'revisa',
+  'el',
+  'score',
+  'frente',
+  'al',
+  'umbral',
+  'y',
+  'documenta',
+  'evidencias',
+  'reproducibles.'
+]
+---
+
+<section
+  id='tagline-reveal'
+  class='spectral-grid relative overflow-hidden border-y border-[#34435c] bg-[#090f1d] text-[#f5f3ec]'
+  aria-label='Declaración de propósito de Doppler'
+>
+  <div
+    class='pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_78%_20%,rgba(49,86,211,0.22),transparent_58%)]'
+    aria-hidden='true'
+  ></div>
+
+  <div class='relative mx-auto max-w-[1440px] px-5 py-20 md:px-8 md:py-28'>
+    <div class='mb-8 flex flex-wrap items-center justify-between gap-4 border-b border-[#34435c]/70 pb-4'>
+      <span class='caption-4 font-mono text-[#9bb1ff]'>
+        03 / RIGOR ACÚSTICO SIN CAJA NEGRA
+      </span>
+      <span class='caption-4 font-mono text-[#949fb3]'>
+        SCORE SIGMOIDE ≠ PROBABILIDAD CALIBRADA · UMBRAL 0,6548
+      </span>
+    </div>
+
+    <p class='heading-2 max-w-[1040px] leading-[1.08]'>
+      {words.map(word => (
+        <>
+          <span class='tagline-word'>{word}</span>{' '}
+        </>
+      ))}
+    </p>
+  </div>
+</section>
