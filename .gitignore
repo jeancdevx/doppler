@@ -38,5 +38,6 @@ Doppler_Espectro_Brand_Kit/
 .agents/
 skills-lock.json
 
-# Media
+# Media y modelos activos/empaquetados locales (contienen copias de checkpoints)
 media/
+models/
