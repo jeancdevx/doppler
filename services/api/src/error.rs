@@ -26,6 +26,8 @@ pub enum ApiError {
     R2(String),
     #[error("error del servicio de inferencia: {0}")]
     Inference(String),
+    #[error("en mantenimiento controlado: {0}")]
+    Maintenance(String),
     #[error("error de base de datos: {0}")]
     Database(#[from] sqlx::Error),
     #[error("error interno: {0}")]
@@ -56,6 +58,7 @@ impl ApiError {
             Self::Conflict(_) => (StatusCode::CONFLICT, "invalid_state_transition"),
             Self::R2(_) => (StatusCode::BAD_GATEWAY, "r2_error"),
             Self::Inference(_) => (StatusCode::BAD_GATEWAY, "inference_error"),
+            Self::Maintenance(_) => (StatusCode::SERVICE_UNAVAILABLE, "maintenance_mode"),
             Self::Database(_) => (StatusCode::INTERNAL_SERVER_ERROR, "database_error"),
             Self::Internal(_) => (StatusCode::INTERNAL_SERVER_ERROR, "internal_error"),
         }

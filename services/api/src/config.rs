@@ -34,6 +34,12 @@ pub struct AppConfig {
     pub inference_service_url: String,
     pub inference_timeout_seconds: u64,
     pub session_hmac_secret: String,
+    pub admin_api_token: Option<String>,
+    pub health_check_interval_seconds: u64,
+    pub incident_failure_threshold: u32,
+    pub history_retention_days: i64,
+    pub rate_limit_feedback_per_hour: i64,
+    pub telemetry_redact_on_user_delete: bool,
 }
 
 impl AppConfig {
@@ -94,7 +100,31 @@ impl AppConfig {
                 .to_string(),
             inference_timeout_seconds: parse_u64("INFERENCE_TIMEOUT_SECONDS", 120)?.max(10),
             session_hmac_secret,
+            admin_api_token: env::var("ADMIN_API_TOKEN")
+                .ok()
+                .map(|v| v.trim().to_string())
+                .filter(|v| !v.is_empty() && !v.starts_with("replace_with_")),
+            health_check_interval_seconds: parse_u64("HEALTH_CHECK_INTERVAL_SECONDS", 60)?.max(5),
+            incident_failure_threshold: parse_u32("INCIDENT_FAILURE_THRESHOLD", 3)?.max(1),
+            history_retention_days: parse_i64("HISTORY_RETENTION_DAYS", 30)?.max(1),
+            rate_limit_feedback_per_hour: parse_i64("RATE_LIMIT_FEEDBACK_PER_HOUR", 30)?.max(1),
+            telemetry_redact_on_user_delete: env::var("TELEMETRY_REDACT_ON_USER_DELETE")
+                .map(|v| matches!(v.trim().to_ascii_lowercase().as_str(), "1" | "true" | "yes"))
+                .unwrap_or(false),
         })
+    }
+
+    pub fn sqlite_file_path(&self) -> Option<String> {
+        let stripped = self
+            .database_url
+            .strip_prefix("sqlite://")
+            .or_else(|| self.database_url.strip_prefix("sqlite:"))?;
+        let path_part = stripped.split('?').next().unwrap_or(stripped).trim();
+        if path_part.is_empty() || path_part == ":memory:" {
+            None
+        } else {
+            Some(path_part.to_string())
+        }
     }
 
     pub fn r2_configured(&self) -> bool {

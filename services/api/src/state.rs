@@ -1,7 +1,8 @@
+use std::collections::HashMap;
 use std::sync::Arc;
 
 use sqlx::SqlitePool;
-use tokio::sync::Notify;
+use tokio::sync::{Mutex, Notify};
 
 use crate::config::AppConfig;
 use crate::inference::InferenceClient;
@@ -14,6 +15,7 @@ pub struct AppState {
     pub r2: R2Storage,
     pub inference: InferenceClient,
     pub job_notify: Arc<Notify>,
+    pub failure_streaks: Arc<Mutex<HashMap<String, u32>>>,
 }
 
 impl AppState {
@@ -29,6 +31,7 @@ impl AppState {
             r2,
             inference,
             job_notify: Arc::new(Notify::new()),
+            failure_streaks: Arc::new(Mutex::new(HashMap::new())),
         }
     }
 }
