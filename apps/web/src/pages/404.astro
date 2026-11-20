@@ -1,0 +1,36 @@
+---
+import Footer from '@/components/Footer/Footer.astro'
+import Navbar from '@/components/Navbar/Navbar.astro'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+
+import '@/styles/global.css'
+---
+
+<BaseLayout
+  title='404 · Doppler'
+  description='Página no encontrada en Doppler.'
+>
+  <Navbar />
+
+  <main
+    id='contenido-principal'
+    class='mx-auto flex min-h-[65svh] max-w-[1440px] flex-col items-start justify-center gap-6 px-5 py-20 md:px-8'
+  >
+    <span class='caption-4 font-mono text-[#3156d3]'>ERROR 404</span>
+    <h1 class='heading-2 max-w-[640px] text-[#172b4d]'>
+      Esta ruta no corresponde a ninguna vista del estudio.
+    </h1>
+    <p class='body-3 max-w-[480px] text-[#52617b]'>
+      Regresa al estudio acústico para cargar archivos WAV y consultar los
+      resultados de detección por ventanas temporales.
+    </p>
+    <a
+      href='/'
+      class='interactive-lift button-md inline-flex min-h-[44px] items-center rounded-lg bg-[#3156d3] px-5 py-2.5 text-white hover:bg-[#2643a8]'
+    >
+      Volver al estudio Doppler
+    </a>
+  </main>
+
+  <Footer />
+</BaseLayout>

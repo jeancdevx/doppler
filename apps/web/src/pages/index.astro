@@ -1,0 +1,120 @@
+---
+import { AudioStudio } from '@/components/AudioStudio'
+import BentoFeatureGrid from '@/components/BentoFeatureGrid/BentoFeatureGrid.astro'
+import Footer from '@/components/Footer/Footer.astro'
+import Navbar from '@/components/Navbar/Navbar.astro'
+import { ScrollAcousticStory } from '@/components/ScrollAcousticStory'
+import SpectralHero from '@/components/SpectralHero/SpectralHero.astro'
+import TaglineReveal from '@/components/TaglineReveal/TaglineReveal.astro'
+import { FaqAccordion } from '@/components/ui/accordion'
+import { FAQ_ITEMS } from '@/constants/doppler'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+
+import '@/styles/global.css'
+---
+
+<BaseLayout>
+  <Navbar />
+
+  <main id='contenido-principal'>
+    <!-- Acto 1: Portada interactiva de campo acústico en obsidiana -->
+    <SpectralHero />
+
+    <!-- Acto 2: Recorrido continuo guiado por scroll del pipeline ResNet18 -->
+    <ScrollAcousticStory client:load />
+
+    <!-- Acto 3: Estudio interactivo protagonista sobre lienzo marfil -->
+    <section
+      id='studio'
+      class='spectral-grid-ivory scroll-mt-20 border-t border-[#d7d9df] bg-[#f5f3ec]'
+      aria-labelledby='studio-heading'
+    >
+      <div class='mx-auto max-w-[1440px] px-5 py-16 md:px-8 md:py-24'>
+        <div class='mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end'>
+          <div class='max-w-[680px]'>
+            <span class='caption-4 font-mono text-[#3156d3]'>
+              02 / EL ESTUDIO INTERACTIVO
+            </span>
+            <h2 id='studio-heading' class='heading-2 mt-2 text-[#172b4d]'>
+              El detalle está en la señal.
+            </h2>
+          </div>
+          <p class='body-6 max-w-[380px] text-[#52617b]'>
+            Carga un archivo WAV en Cloudflare R2 privado, inspecciona su forma
+            de onda, espectrograma y perfil de scores reales y exporta JSON o
+            CSV trazable.
+          </p>
+        </div>
+
+        <AudioStudio client:load />
+      </div>
+    </section>
+
+    <!-- Acto 4: Declaración editorial palabra por palabra en contraste obsidiana -->
+    <TaglineReveal />
+
+    <!-- Acto 5: Bento asimétrico de arquitectura, R2 privado y contrato del modelo -->
+    <BentoFeatureGrid />
+
+    <!-- Acto 6: Preguntas frecuentes (layout editorial asimétrico 4 + 8 columnas) -->
+    <section
+      id='faq'
+      class='reveal-section scroll-mt-20 border-t border-[#d7d9df] bg-[#f5f3ec]'
+      aria-labelledby='faq-heading'
+    >
+      <div class='mx-auto max-w-[1440px] px-5 py-16 md:px-8 md:py-24'>
+        <div class='grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-start'>
+          <!-- Columna izquierda fija: contexto editorial + tarjeta de reglas congeladas -->
+          <div class='flex flex-col gap-6 lg:sticky lg:top-24 lg:col-span-4'>
+            <div>
+              <span class='caption-4 font-mono text-[#3156d3]'>
+                05 / INTERPRETACIÓN Y PRIVACIDAD
+              </span>
+              <h2 id='faq-heading' class='heading-2 mt-2 text-[#172b4d]'>
+                Preguntas frecuentes sobre el análisis.
+              </h2>
+              <p class='body-3 mt-3 text-[#52617b]'>
+                Criterios exactos para interpretar ventanas solapadas, scores no
+                calibrados y el ciclo de vida privado en Cloudflare R2.
+              </p>
+            </div>
+
+            <div class='rounded-2xl border border-[#34435c] bg-[#090f1d] p-5 text-[#f5f3ec]'>
+              <div class='flex items-center justify-between border-b border-[#34435c] pb-3 font-mono text-[11px] text-[#9bb1ff]'>
+                <span>REGLAS NO NEGOCIABLES</span>
+                <span>V1.0</span>
+              </div>
+              <ul class='mt-4 flex flex-col gap-3 font-mono text-xs'>
+                <li class='flex items-start justify-between gap-3'>
+                  <span class='text-[#949fb3]'>Ventana / Salto</span>
+                  <span class='text-right text-[#f5f3ec]'>3,0 s / 1,5 s</span>
+                </li>
+                <li class='flex items-start justify-between gap-3'>
+                  <span class='text-[#949fb3]'>Score sigmoide</span>
+                  <span class='text-right text-[#ffdf9f]'>≠ % confianza</span>
+                </li>
+                <li class='flex items-start justify-between gap-3'>
+                  <span class='text-[#949fb3]'>Clips &lt; 3,0 s</span>
+                  <span class='text-right text-[#f5f3ec]'>Sin relleno</span>
+                </li>
+                <li class='flex items-start justify-between gap-3'>
+                  <span class='text-[#949fb3]'>Retención R2</span>
+                  <span class='text-right text-[#86d6b8]'>
+                    24 h o borrado ya
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Columna derecha: tarjetas numeradas de acordeón -->
+          <div class='lg:col-span-8'>
+            <FaqAccordion client:visible items={FAQ_ITEMS} />
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>
