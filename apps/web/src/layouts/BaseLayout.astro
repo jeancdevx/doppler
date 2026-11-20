@@ -1,0 +1,138 @@
+---
+interface Props {
+  title?: string
+  description?: string
+}
+
+const {
+  title = 'Doppler — Detección acústica de sirenas por ventanas temporales',
+  description = 'Carga archivos de audio WAV en almacenamiento privado Cloudflare R2 y consulta la clasificación de sirenas ventana a ventana con ResNet18 sobre Log-Mel.'
+} = Astro.props
+---
+
+<!doctype html>
+<html lang='es'>
+  <head>
+    <meta charset='utf-8' />
+    <meta
+      name='viewport'
+      content='width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content'
+    />
+    <meta name='description' content={description} />
+    <meta
+      name='theme-color'
+      media='(prefers-color-scheme: light)'
+      content='#F5F3EC'
+    />
+    <meta
+      name='theme-color'
+      media='(prefers-color-scheme: dark)'
+      content='#090F1D'
+    />
+    <meta name='color-scheme' content='light dark' />
+    <meta property='og:title' content={title} />
+    <meta property='og:description' content={description} />
+    <meta property='og:image' content='/social/doppler-og-1200x630.png' />
+    <meta property='og:type' content='website' />
+    <link rel='icon' href='/favicon/favicon.svg' type='image/svg+xml' />
+    <link rel='icon' href='/favicon/favicon.ico' sizes='any' />
+    <link rel='apple-touch-icon' href='/favicon/doppler-app-180.png' />
+    <link rel='manifest' href='/favicon/site.webmanifest' />
+    <link
+      rel='preload'
+      href='/fonts/woff2/IBMPlexSans-400.woff2'
+      as='font'
+      type='font/woff2'
+      crossorigin
+    />
+    <link
+      rel='preload'
+      href='/fonts/woff2/IBMPlexSans-500.woff2'
+      as='font'
+      type='font/woff2'
+      crossorigin
+    />
+    <link
+      rel='preload'
+      href='/fonts/woff2/IBMPlexMono-Regular.woff2'
+      as='font'
+      type='font/woff2'
+      crossorigin
+    />
+    <title>{title}</title>
+  </head>
+  <body>
+    <a
+      href='#contenido-principal'
+      class='sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-lg focus:bg-[#3156d3] focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white'
+    >
+      Saltar al contenido principal
+    </a>
+
+    <slot />
+
+    <script>
+      const reduced = window.matchMedia(
+        '(prefers-reduced-motion: reduce)'
+      ).matches
+
+      const sections = document.querySelectorAll<HTMLElement>('.reveal-section')
+
+      if (reduced || !('IntersectionObserver' in window)) {
+        sections.forEach(el => {
+          el.dataset.visible = 'true'
+        })
+      } else {
+        const observer = new IntersectionObserver(
+          entries => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                ;(entry.target as HTMLElement).dataset.visible = 'true'
+                observer.unobserve(entry.target)
+              }
+            }
+          },
+          { threshold: 0.12 }
+        )
+
+        sections.forEach(el => observer.observe(el))
+      }
+
+      const taglineWords =
+        document.querySelectorAll<HTMLElement>('.tagline-word')
+
+      if (taglineWords.length > 0) {
+        if (reduced || !('IntersectionObserver' in window)) {
+          taglineWords.forEach(w => {
+            w.dataset.lit = 'true'
+          })
+        } else {
+          const taglineContainer = document.getElementById('tagline-reveal')
+
+          if (taglineContainer) {
+            const wordObserver = new IntersectionObserver(
+              entries => {
+                for (const entry of entries) {
+                  if (entry.isIntersecting) {
+                    taglineWords.forEach((word, idx) => {
+                      window.setTimeout(
+                        () => {
+                          word.dataset.lit = 'true'
+                        },
+                        Math.min(idx * 55, 950)
+                      )
+                    })
+                    wordObserver.unobserve(entry.target)
+                  }
+                }
+              },
+              { threshold: 0.25 }
+            )
+
+            wordObserver.observe(taglineContainer)
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

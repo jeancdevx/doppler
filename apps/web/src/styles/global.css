@@ -1,0 +1,548 @@
+@import 'tailwindcss';
+
+/* ==========================================================================
+   Doppler / Espectro — Tipografía local (IBM Plex Sans & IBM Plex Mono)
+   ========================================================================== */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  src: url('/fonts/woff2/IBMPlexSans-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans';
+  src: url('/fonts/woff2/IBMPlexSans-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans';
+  src: url('/fonts/woff2/IBMPlexSans-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('/fonts/woff2/IBMPlexMono-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ==========================================================================
+   Tokens maestros Doppler / Espectro + mapeo semántico Tailwind v4
+   ========================================================================== */
+:root {
+  --doppler-blue-50: #eef2ff;
+  --doppler-blue-100: #dde5ff;
+  --doppler-blue-200: #becdff;
+  --doppler-blue-300: #9bb1ff;
+  --doppler-blue-400: #7c98ff;
+  --doppler-blue-500: #5275ef;
+  --doppler-blue-600: #3156d3;
+  --doppler-blue-700: #2643a8;
+  --doppler-blue-800: #233b88;
+  --doppler-blue-900: #223568;
+  --doppler-blue-950: #121d3c;
+
+  --doppler-neutral-0: #ffffff;
+  --doppler-neutral-50: #f5f3ec;
+  --doppler-neutral-100: #eae8e1;
+  --doppler-neutral-200: #d7d9df;
+  --doppler-neutral-300: #bdc4d1;
+  --doppler-neutral-400: #949fb3;
+  --doppler-neutral-500: #69768d;
+  --doppler-neutral-600: #52617b;
+  --doppler-neutral-700: #34435c;
+  --doppler-neutral-800: #172b4d;
+  --doppler-neutral-900: #101b30;
+  --doppler-neutral-950: #090f1d;
+
+  --doppler-status-positive: #86d6b8;
+  --doppler-status-positive-text: #b6efda;
+  --doppler-status-target: #f0c779;
+  --doppler-status-target-text: #ffdf9f;
+  --doppler-status-error: #f69d9d;
+  --doppler-status-error-text: #ffcdcd;
+
+  /* Superficies editoriales */
+  --bg: var(--doppler-neutral-50);
+  --surface: var(--doppler-neutral-0);
+  --surface-subtle: var(--doppler-neutral-100);
+  --ink: var(--doppler-neutral-800);
+  --muted: var(--doppler-neutral-600);
+  --border: var(--doppler-neutral-200);
+  --action: var(--doppler-blue-600);
+  --action-hover: var(--doppler-blue-700);
+  --on-action: var(--doppler-neutral-0);
+  --ring: var(--doppler-blue-500);
+
+  /* Curvas y tiempos oficiales */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-fast: 140ms;
+  --motion-normal: 220ms;
+  --motion-reveal: 600ms;
+}
+
+[data-studio-theme='dark'] {
+  --studio-bg: #090f1d;
+  --studio-panel: #101b30;
+  --studio-raised: #172b4d;
+  --studio-text: #f5f3ec;
+  --studio-muted: #bdc4d1;
+  --studio-subtle: #949fb3;
+  --studio-border: #34435c;
+  --studio-accent: #9bb1ff;
+  --studio-accent-hover: #becdff;
+  --studio-on-accent: #090f1d;
+
+  --badge-ok-bg: #142e28;
+  --badge-ok-text: #b6efda;
+  --badge-ok-border: #355b50;
+
+  --badge-target-bg: #2d2414;
+  --badge-target-text: #ffdf9f;
+  --badge-target-border: #f0c779;
+
+  --badge-error-bg: #33181d;
+  --badge-error-text: #ffcdcd;
+  --badge-error-border: #8c4148;
+
+  --badge-info-bg: #152447;
+  --badge-info-text: #becdff;
+  --badge-info-border: #3a5499;
+}
+
+[data-studio-theme='light'] {
+  --studio-bg: #ffffff;
+  --studio-panel: #f5f3ec;
+  --studio-raised: #eae8e1;
+  --studio-text: #172b4d;
+  --studio-muted: #52617b;
+  --studio-subtle: #69768d;
+  --studio-border: #d7d9df;
+  --studio-accent: #3156d3;
+  --studio-accent-hover: #2643a8;
+  --studio-on-accent: #ffffff;
+
+  --badge-ok-bg: #e3f5ea;
+  --badge-ok-text: #145334;
+  --badge-ok-border: #9ccfb4;
+
+  --badge-target-bg: #fef4df;
+  --badge-target-text: #744a00;
+  --badge-target-border: #d8a84e;
+
+  --badge-error-bg: #fdecec;
+  --badge-error-text: #8f1d24;
+  --badge-error-border: #e3a0a5;
+
+  --badge-info-bg: #eef2ff;
+  --badge-info-text: #233b88;
+  --badge-info-border: #becdff;
+}
+
+@theme inline {
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+  --color-background: var(--bg);
+  --color-foreground: var(--ink);
+  --color-muted-foreground: var(--muted);
+  --color-primary: var(--action);
+  --color-border: var(--border);
+}
+
+/* ==========================================================================
+   Base móvil-nativa y accesibilidad WCAG 2.2 AA
+   ========================================================================== */
+html {
+  background-color: #090f1d;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  scroll-behavior: smooth;
+  scroll-padding-top: 88px;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior-y: none;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background-color: var(--bg);
+  color: var(--ink);
+  font-size: 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+button,
+a,
+[role='button'],
+[role='tab'] {
+  touch-action: manipulation;
+}
+
+button,
+[role='button'],
+[role='tab'] {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+input,
+textarea,
+select {
+  font-size: 16px;
+}
+
+:focus {
+  scroll-margin-top: 88px;
+  scroll-margin-bottom: 48px;
+}
+
+:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 3px;
+}
+
+/* ==========================================================================
+   Escala tipográfica editorial de alto impacto
+   ========================================================================== */
+.heading-display {
+  font-size: clamp(3rem, 7.6vw, 6.5rem);
+  line-height: 0.94;
+  font-weight: 500;
+  letter-spacing: -0.055em;
+  text-wrap: balance;
+}
+
+.heading-1 {
+  font-size: 3rem;
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+@media (min-width: 768px) {
+  .heading-1 {
+    font-size: 4.5rem;
+    line-height: 0.98;
+  }
+}
+
+.heading-2 {
+  font-size: 1.875rem;
+  line-height: 1.08;
+  font-weight: 500;
+  letter-spacing: -0.038em;
+  text-wrap: balance;
+}
+
+@media (min-width: 768px) {
+  .heading-2 {
+    font-size: 3rem;
+    line-height: 1.04;
+  }
+}
+
+.heading-3 {
+  font-size: 1.5rem;
+  line-height: 1.15;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+@media (min-width: 768px) {
+  .heading-3 {
+    font-size: 2.25rem;
+    line-height: 1.08;
+  }
+}
+
+.heading-4 {
+  font-size: 1.25rem;
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.title-3 {
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.body-3 {
+  font-size: 1rem;
+  line-height: 1.55;
+  font-weight: 400;
+  text-wrap: pretty;
+}
+
+.body-6 {
+  font-size: 0.875rem;
+  line-height: 1.48;
+  font-weight: 400;
+  text-wrap: pretty;
+}
+
+.button-md {
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.button-sm {
+  font-size: 0.875rem;
+  line-height: 1.43;
+  font-weight: 500;
+}
+
+.caption-4 {
+  font-size: 0.75rem;
+  line-height: 1.33;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   Efectos arquitectónicos inspirados en Aceternity UI / Magic UI / Linear
+   ========================================================================== */
+.spectral-grid {
+  background-image:
+    linear-gradient(rgba(155, 177, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(155, 177, 255, 0.07) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.spectral-grid-ivory {
+  background-image:
+    linear-gradient(rgba(23, 43, 77, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 43, 77, 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.hero-headline-accent {
+  background: linear-gradient(95deg, #ffffff 0%, #9bb1ff 58%, #f0c779 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Magic UI Border Beam para CTA principal y marco activo del estudio */
+@keyframes border-beam-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.beam-button-wrap {
+  position: relative;
+  display: inline-flex;
+  padding: 1.5px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(155, 177, 255, 0.25);
+}
+
+.beam-button-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -120%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg 260deg,
+    #9bb1ff 300deg,
+    #f0c779 335deg,
+    transparent 360deg
+  );
+  animation: border-beam-spin 4.2s linear infinite;
+}
+
+.beam-button-inner {
+  position: relative;
+  z-index: 1;
+  border-radius: 8.5px;
+}
+
+/* Flujo de paquetes de señal en diagramas SVG del Bento */
+@keyframes signal-dash {
+  from {
+    stroke-dashoffset: 64;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.signal-flow-line {
+  stroke-dasharray: 6 10;
+  animation: signal-dash 1.8s linear infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+  70% {
+    transform: scale(1.75);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.75);
+    opacity: 0;
+  }
+}
+
+.live-pulse-ring {
+  animation: pulse-ring 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+/* Regla acústica calibrada estilo Teenage Engineering */
+.acoustic-ruler {
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(155, 177, 255, 0.35) 0px,
+    rgba(155, 177, 255, 0.35) 1px,
+    transparent 1px,
+    transparent 16px
+  );
+  background-size: 16px 8px;
+  background-repeat: repeat-x;
+  background-position: top;
+}
+
+/* Revelados editoriales y Tagline palabra por palabra */
+.reveal-section {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity var(--motion-reveal) var(--ease-out),
+    transform var(--motion-reveal) var(--ease-out);
+}
+
+.reveal-section[data-visible='true'] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tagline-word {
+  color: rgba(245, 243, 236, 0.22);
+  transition: color 520ms var(--ease-out);
+}
+
+.tagline-word[data-lit='true'] {
+  color: #f5f3ec;
+}
+
+/* Spotlight interactivo en tarjetas Bento oscuras (solo puntero fino) */
+.spotlight-card {
+  position: relative;
+  overflow: hidden;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .spotlight-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 280ms var(--ease-out);
+    background: radial-gradient(
+      420px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      rgba(155, 177, 255, 0.14),
+      transparent 65%
+    );
+  }
+
+  .spotlight-card:hover::after {
+    opacity: 1;
+  }
+
+  .hover-surface:hover {
+    border-color: var(--doppler-blue-500);
+  }
+}
+
+.interactive-lift {
+  transition:
+    transform var(--motion-fast) var(--ease-out),
+    background-color var(--motion-fast) var(--ease-out),
+    border-color var(--motion-fast) var(--ease-out),
+    color var(--motion-fast) var(--ease-out);
+}
+
+.interactive-lift:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* Preferencias del sistema */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .reveal-section {
+    opacity: 1;
+    transform: none;
+    transition: opacity 200ms ease;
+  }
+
+  .tagline-word {
+    color: #f5f3ec;
+    transition: none;
+  }
+
+  .beam-button-wrap::before,
+  .signal-flow-line,
+  .live-pulse-ring {
+    animation: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass-bar {
+    background-color: #090f1d !important;
+    backdrop-filter: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --border: #52617b;
+  }
+
+  [data-studio-theme='dark'] {
+    --studio-border: #9bb1ff;
+  }
+}
